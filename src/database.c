@@ -16,8 +16,16 @@ void freeVectorDB(VectorDB* db) {
     free(db->buckets);
     free(db);
 }
-void removeVectorBucket(VectorDB* db, int index) {
-    if (index >= db->size) {
+void removeVectorBucket(VectorDB* db, char* name) {
+    int index = -1;
+
+    for (int i = 0; i < db->size; i++) {
+        if (db->buckets[i].name == name) {
+            index = i;
+            break;
+        }
+    }
+    if (index == -1) {
         return;
     }
     for (int i = index; i < db->size-1; i++) {

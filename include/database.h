@@ -4,5 +4,5 @@
 
 VectorDB* initVectorDB(int capacity);
 void freeVectorDB(VectorDB* db);
-void removeVectorBucket(VectorDB* db, int index);
+void removeVectorBucket(VectorDB* db, char* name);
 #endif
