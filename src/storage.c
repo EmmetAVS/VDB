@@ -42,13 +42,13 @@ void removeDBEntry(VBucket* bucket, int index) {
     if (index >= bucket->size) {
         return;
     }
+    free(bucket->data[index].vec.data);
     for (int i = index; i < bucket->size-1; i++) {
         bucket->data[i] = bucket->data[i+1];
     }
     bucket->size -= 1;
     return;
 }
-
 INFO_TYPE determineMostSimilar(VBucket* bucket, Vector* v) {
     double mostSimilar = -2.00;
     int index = 0;

@@ -28,14 +28,14 @@ void removeVectorBucket(VectorDB* db, char* name) {
     if (index == -1) {
         return;
     }
+    freeVectorBucket(&db->buckets[index]);
     for (int i = index; i < db->size-1; i++) {
         db->buckets[i] = db->buckets[i+1];
     }
     db->size -= 1;
     return;
 }
-int main()
-{
+int main() {
     int size = 10;
     VBucket* bucket = initVectorBucket("Bucket", size);
     for (int i = 0; i < size; i++) {
@@ -53,12 +53,8 @@ int main()
         printf("Entry %d: '%s', Vec 1: %f\n", i, bucket->data[i].information, bucket->data[i].vec.data[0]);
     }
 
-    Vector v = initVector(5);
-    float i = 9.0;
-    float arr[5] = {i, i+1.0, i+2.0, i+3.0, i+4.0};
-    setVectorData(&v, arr);
-    sortBucket(bucket, &v);
     printf("\n");
+    removeDBEntry(bucket, 5);
     for (int i = 0; i < bucket->size; i++) {
         printf("Entry %d: '%s', Vec 1: %f\n", i, bucket->data[i].information, bucket->data[i].vec.data[0]);
     }
