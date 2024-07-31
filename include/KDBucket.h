@@ -28,7 +28,8 @@ KDNode* recDelete(KDNode* root, KDNode* node, int depth, int dim);
 void deleteKDNode(KDBucket* bucket, KDNode* node);
 KDNode* nearestNeighbor(KDBucket* bucket, Vector* v);
 void recNN(KDNode* root, Vector* v, KDNode** best, double* bestdist, int depth);
+KDNode** kNearestNeighbors(KDBucket* bucket, Vector* v, int k);
+void recKNN(KDNode* root, Vector* v, KDNode*** best, double** bestdists, int depth, int k);
 KDBucket* initKDBucket(int dim);
 void freeKDBucket(KDBucket* bucket);
-
 #endif

@@ -122,6 +122,72 @@ KDNode* nearestNeighbor(KDBucket* bucket, Vector* v) {
     recNN(bucket->root, v, &best, &bestdist, 0);
     return best;
 }
+void recKNN(KDNode* root, Vector* v, KDNode*** best, double** bestdists, int depth, int k) {
+    if (!root) {
+        return;
+    }
+
+    double dist = distSquared(v, &root->vec);
+    double worst = -1.0;
+    int index;
+    for (int i = 0; i < k; i ++) {
+        if (worst < (*bestdists)[i]) {
+            worst = (*bestdists)[i];
+            index = i;
+        }
+    }
+    if (worst > dist) {
+        (*bestdists)[index] = dist;
+        (*best)[index] = root;
+    }
+
+    int cd = depth % root->vec.dim;
+
+    double diff = v->data[cd] - root->vec.data[cd];
+    KDNode* near;
+    KDNode* far;
+    if (diff > 0) {
+        near = root->right;
+        far = root->left;
+    } else {
+        near = root->left;
+        far = root->right;
+    }
+
+    recKNN(near, v, best, bestdists, depth+1, k);
+
+    for (int i = 0; i < k; i++) {
+        if (diff * diff  < (*bestdists)[i]) {
+            recKNN(far, v, best, bestdists, depth+1, k);
+            break;
+        }
+    }
+}
+KDNode** kNearestNeighbors(KDBucket* bucket, Vector* v, int k) {
+    KDNode** bests = (KDNode**)malloc(k*sizeof(KDNode*));
+    double* bestdists = (double*)malloc(k*sizeof(double));
+    for (int i = 0; i < k; i++) {
+        bestdists[i] = DBL_MAX;
+    }
+    recKNN(bucket->root, v, &bests, &bestdists, 0, k);
+    int sorted = 0;
+    while (!sorted) {
+        sorted = 1;
+        for (int i = 1; i < k; i++) {
+            if (bestdists[i] < bestdists[i-1]) {
+                double buffer = bestdists[i-1];
+                KDNode* buffer_node = bests[i-1];
+                bestdists[i-1] = bestdists[i];
+                bests[i-1] = bests[i];
+                bestdists[i] = buffer;
+                bests[i] = buffer_node;
+                sorted = 0;
+            }
+        }
+    }
+    free(bestdists);
+    return bests;
+}
 KDBucket* initKDBucket(int dim) {
     KDBucket* bucket = (KDBucket*)malloc(sizeof(KDBucket));
     bucket->size = 0;

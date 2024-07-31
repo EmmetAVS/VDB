@@ -38,7 +38,7 @@ void removeVectorBucket(VectorDB* db, char* name) {
 }
 int main() {
     KDBucket* bucket = initKDBucket(5);
-    int size = 5;
+    int size = 50;
     for (int i = 0; i < size; i++) {
         Vector v = initVector(5);
         float f = (float) i;
@@ -51,10 +51,16 @@ int main() {
     }
 
     Vector v = initVector(5);
-    int f = 3;
+    int f = 5;
     float arr[5] = {f, f+1.0, f+2.0, f+3.0, f+4.0};
     setVectorData(&v, arr);
-    printf("%s\n", nearestNeighbor(bucket, &v)->information);
+    int k = 4;
+    KDNode** mostsimilar = kNearestNeighbors(bucket, &v, k);
+    for (int i = 0; i < k; i++) {
+        printf("I: %d, ", i);
+        printf("ISNULL: %d, ", mostsimilar[i] == NULL);
+        printf("Info: '%s'\n", mostsimilar[i]->information);
+    }
 
     freeKDBucket(bucket);
 }
