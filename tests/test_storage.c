@@ -1,26 +1,49 @@
 #include "../include/database.h"
+#include <assert.h>
+#define SUCCESS 0
 
-int main() {
-    int size = 10;
-    VBucket* bucket = initVectorBucket("Bucket", size);
+int testKDTree() {
+    KDBucket* bucket = initKDBucket(5);
+    int size = 50;
     for (int i = 0; i < size; i++) {
         Vector v = initVector(5);
         float f = (float) i;
         float arr[5] = {f, f+1.0, f+2.0, f+3.0, f+4.0};
         setVectorData(&v, arr);
-        char* name = (char*)malloc(20*sizeof(char));
-        sprintf(name, "DBEntry: %d", i);
-        DBEntry entry = initDBEntry(v, name);
-        addDBEntry(bucket, entry);
+        char* name = (char*)malloc(8*sizeof(char));
+        sprintf(name, "Name: %d", i);
+        KDNode* node = initKDNode(v, name);
+        insertKDNode(bucket, node);
     }
 
-    for (int i = 0; i < size; i++) {
-        printf("Entry %d: '%s', Vec 1: %f\n", i, bucket->data[i].information, bucket->data[i].vec.data[0]);
-    }
+    Vector v = initVector(5);
+    int f = 5;
+    float arr[5] = {f, f+1.0, f+2.0, f+3.0, f+4.0};
+    setVectorData(&v, arr);
+    int k = 4;
+    KDNode** mostsimilar = kNearestNeighbors(bucket, &v, k);
+    assert(mostsimilar[0]->vec.data[0] == 5);
+    assert(mostsimilar[1]->vec.data[0] == 4);
+    assert(mostsimilar[2]->vec.data[0] == 6);
+    assert(mostsimilar[3]->vec.data[0] == 3);
 
-    printf("\n");
-    removeDBEntry(bucket, 0);
-    for (int i = 0; i < bucket->size; i++) {
-        printf("Entry %d: '%s', Vec 1: %f\n", i, bucket->data[i].information, bucket->data[i].vec.data[0]);
+    deleteKDNode(bucket, mostsimilar[0]);
+
+    KDNode** mostsimilar_2 = kNearestNeighbors(bucket, &v, k);
+    assert(mostsimilar_2[0]->vec.data[0] == 4);
+    assert(mostsimilar_2[1]->vec.data[0] == 6);
+    assert(mostsimilar_2[2]->vec.data[0] == 7);
+    assert(mostsimilar_2[3]->vec.data[0] == 3);
+
+    free(mostsimilar_2);
+    free(mostsimilar);
+    freeKDBucket(bucket);
+    return 0;
+}
+
+int main() {
+    if (!testKDTree()) {
+        perror("KDTree test failed");
+        return 1;
     }
 }

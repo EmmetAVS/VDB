@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <assert.h>
 
 VectorDB* initVectorDB(int capacity) {
     VectorDB* db = (VectorDB*)malloc(sizeof(VectorDB));
@@ -44,7 +45,7 @@ int main() {
         float f = (float) i;
         float arr[5] = {f, f+1.0, f+2.0, f+3.0, f+4.0};
         setVectorData(&v, arr);
-        char* name = (char*)malloc(20*sizeof(char));
+        char* name = (char*)malloc(8*sizeof(char));
         sprintf(name, "Name: %d", i);
         KDNode* node = initKDNode(v, name);
         insertKDNode(bucket, node);
@@ -56,11 +57,21 @@ int main() {
     setVectorData(&v, arr);
     int k = 4;
     KDNode** mostsimilar = kNearestNeighbors(bucket, &v, k);
-    for (int i = 0; i < k; i++) {
-        printf("I: %d, ", i);
-        printf("ISNULL: %d, ", mostsimilar[i] == NULL);
-        printf("Info: '%s'\n", mostsimilar[i]->information);
-    }
+    assert(mostsimilar[0]->vec.data[0] == 5);
+    assert(mostsimilar[1]->vec.data[0] == 4);
+    assert(mostsimilar[2]->vec.data[0] == 6);
+    assert(mostsimilar[3]->vec.data[0] == 3);
 
+    deleteKDNode(bucket, mostsimilar[0]);
+
+    KDNode** mostsimilar_2 = kNearestNeighbors(bucket, &v, k);
+    assert(mostsimilar_2[0]->vec.data[0] == 4);
+    assert(mostsimilar_2[1]->vec.data[0] == 6);
+    assert(mostsimilar_2[2]->vec.data[0] == 7);
+    assert(mostsimilar_2[3]->vec.data[0] == 3);
+
+    free(mostsimilar_2);
+    free(mostsimilar);
     freeKDBucket(bucket);
+    return 0;
 }
