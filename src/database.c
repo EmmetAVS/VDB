@@ -1,4 +1,5 @@
 #include "../include/database.h"
+#include "../include/KDBucket.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -36,26 +37,24 @@ void removeVectorBucket(VectorDB* db, char* name) {
     return;
 }
 int main() {
-    int size = 10;
-    VBucket* bucket = initVectorBucket("Bucket", size);
+    KDBucket* bucket = initKDBucket(5);
+    int size = 5;
     for (int i = 0; i < size; i++) {
         Vector v = initVector(5);
         float f = (float) i;
         float arr[5] = {f, f+1.0, f+2.0, f+3.0, f+4.0};
         setVectorData(&v, arr);
         char* name = (char*)malloc(20*sizeof(char));
-        sprintf(name, "DBEntry: %d", i);
-        DBEntry entry = initDBEntry(v, name);
-        addDBEntry(bucket, entry);
+        sprintf(name, "Name: %d", i);
+        KDNode* node = initKDNode(v, name);
+        insertKDNode(bucket, node);
     }
 
-    for (int i = 0; i < size; i++) {
-        printf("Entry %d: '%s', Vec 1: %f\n", i, bucket->data[i].information, bucket->data[i].vec.data[0]);
-    }
+    Vector v = initVector(5);
+    int f = 3;
+    float arr[5] = {f, f+1.0, f+2.0, f+3.0, f+4.0};
+    setVectorData(&v, arr);
+    printf("%s\n", nearestNeighbor(bucket, &v)->information);
 
-    printf("\n");
-    removeDBEntry(bucket, 5);
-    for (int i = 0; i < bucket->size; i++) {
-        printf("Entry %d: '%s', Vec 1: %f\n", i, bucket->data[i].information, bucket->data[i].vec.data[0]);
-    }
+    freeKDBucket(bucket);
 }

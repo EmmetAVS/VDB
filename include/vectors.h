@@ -16,4 +16,5 @@ void setVectorData(Vector* v, VECTOR_TYPE arr[]);
 double cosineSimilarity(Vector* v1, Vector* v2);
 double dotProduct(Vector* v1, Vector* v2);
 double norm(Vector* v);
+double distSquared(Vector* v1, Vector* v2);
 #endif

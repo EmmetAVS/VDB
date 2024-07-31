@@ -40,3 +40,12 @@ double cosineSimilarity(Vector* v1, Vector* v2) {
     }
     return dotProduct(v1, v2) / (norm(v1) * norm(v2));
 }
+
+double distSquared(Vector* v1, Vector* v2) {
+    double dist = 0;
+    for (int i = 0; i < v1->dim; i++) {
+        double difference = v1->data[i] - v2->data[i];
+        dist += difference * difference;
+    }
+    return dist;
+}
