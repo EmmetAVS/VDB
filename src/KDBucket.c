@@ -7,7 +7,8 @@ KDNode* initKDNode(Vector vec, INFO_TYPE information) {
     node->vec = vec;
     node->left = NULL;
     node->right = NULL;
-    node->initalized = 0;
+    node->initalized = 1;
+    return node;
 }
 void freeKDNode(KDNode* node) {
     if (!node) {
@@ -23,6 +24,9 @@ void freeKDNode(KDNode* node) {
         }
         if (node->right) {
             freeKDNode(node->right);
+        }
+        if (node->information) {
+            free(node->information);
         }
     }
     free(node);

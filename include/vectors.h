@@ -1,6 +1,7 @@
 #ifndef VECTORS_H
 #define VECTORS_H
 #include <stdlib.h>
+#include <math.h>
 #ifndef VECTOR_TYPE
 #define VECTOR_TYPE float
 #endif

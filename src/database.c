@@ -52,10 +52,12 @@ int main() {
             arr[d] = ((float) d) + ((float) i);
         }
         setVectorData(&v, arr);
-        char* name = (char*)malloc(8*sizeof(char));
+        free(arr);
+        char* name = (char*)malloc(9*sizeof(char));
         sprintf(name, "Name: %d", i);
         KDNode* node = initKDNode(v, name);
         insertKDNode(bucket, node);
+        //printf("Inserting node %d\n", i);
     }
 
 
@@ -65,6 +67,20 @@ int main() {
     printf("Average of %lf milliseconds per insertion\n", ((double) 1000) * (time_spent/((double) size)));
     printf("\n");
 
+    Vector v = initVector(5);
+    float arr[5] = {-1.0f, 0.0f, 1.0f, 2.0f, 3.0f};
+    setVectorData(&v, arr);
+    KDNode** nodes = kNearestNeighbors(bucket, &v, 50);
+    free(v.data);
+
+    /*
+    for (int i = 0; i < 50; i++) {
+        freeKDNode(nodes[i]);
+    }
+    */
+
+
+    /*
     clock_t begin2 = clock();
     FILE* f = fopen("data.bin", "wb");
     writeKDBucket(bucket, f);
@@ -83,5 +99,10 @@ int main() {
     clock_t end3 = clock();
     double time_spent3 = (double)(end3 - begin3) / CLOCKS_PER_SEC;
     printf("Spent %lf seconds to read\n", time_spent3);
+    */
+
+    free(nodes);
+    freeKDBucket(bucket);
+    printf("Success\n");
     return 0;
 }

@@ -1,6 +1,4 @@
 #include "../include/vectors.h"
-#include <stdlib.h>
-#include <math.h>
 
 Vector initVector(int dim) {
     Vector v;
