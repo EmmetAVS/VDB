@@ -38,12 +38,19 @@ void removeVectorBucket(VectorDB* db, char* name) {
     return;
 }
 int main() {
-    KDBucket* bucket = initKDBucket(5);
-    int size = 50;
+    int dim = 500;
+    KDBucket* bucket = initKDBucket(dim);
+    int size = 10000;
+
+    clock_t begin = clock();
+
     for (int i = 0; i < size; i++) {
-        Vector v = initVector(5);
+        Vector v = initVector(dim);
         float f = (float) i;
-        float arr[5] = {f, f+1.0, f+2.0, f+3.0, f+4.0};
+        float* arr = (float*)malloc(dim * sizeof(float));
+        for (int d = 0; d < dim; d++) {
+            arr[d] = ((float) d) + ((float) i);
+        }
         setVectorData(&v, arr);
         char* name = (char*)malloc(8*sizeof(char));
         sprintf(name, "Name: %d", i);
@@ -51,27 +58,30 @@ int main() {
         insertKDNode(bucket, node);
     }
 
-    Vector v = initVector(5);
-    int f = 5;
-    float arr[5] = {f, f+1.0, f+2.0, f+3.0, f+4.0};
-    setVectorData(&v, arr);
-    int k = 4;
-    KDNode** mostsimilar = kNearestNeighbors(bucket, &v, k);
-    assert(mostsimilar[0]->vec.data[0] == 5);
-    assert(mostsimilar[1]->vec.data[0] == 4);
-    assert(mostsimilar[2]->vec.data[0] == 6);
-    assert(mostsimilar[3]->vec.data[0] == 3);
 
-    deleteKDNode(bucket, mostsimilar[0]);
+    clock_t end = clock();
+    double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+    printf("Spent %lf seconds to add %d KDNodes with %d dimensions.\n", time_spent, size, dim);
+    printf("Average of %lf milliseconds per insertion\n", ((double) 1000) * (time_spent/((double) size)));
+    printf("\n");
 
-    KDNode** mostsimilar_2 = kNearestNeighbors(bucket, &v, k);
-    assert(mostsimilar_2[0]->vec.data[0] == 4);
-    assert(mostsimilar_2[1]->vec.data[0] == 6);
-    assert(mostsimilar_2[2]->vec.data[0] == 7);
-    assert(mostsimilar_2[3]->vec.data[0] == 3);
+    clock_t begin2 = clock();
+    FILE* f = fopen("data.bin", "wb");
+    writeKDBucket(bucket, f);
+    fclose(f);
 
-    free(mostsimilar_2);
-    free(mostsimilar);
-    freeKDBucket(bucket);
+    clock_t end2 = clock();
+    double time_spent2 = (double)(end2 - begin2) / CLOCKS_PER_SEC;
+    printf("Spent %lf seconds to save\n", time_spent2);
+    printf("\n");
+
+    clock_t begin3 = clock();
+    KDBucket* bucket2 = (KDBucket*)malloc(sizeof(KDBucket));
+    FILE* f2 = fopen("data.bin", "rb");
+    readKDBucket(bucket, f2);
+    fclose(f2);
+    clock_t end3 = clock();
+    double time_spent3 = (double)(end3 - begin3) / CLOCKS_PER_SEC;
+    printf("Spent %lf seconds to read\n", time_spent3);
     return 0;
 }

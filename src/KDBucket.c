@@ -27,7 +27,7 @@ void freeKDNode(KDNode* node) {
     }
     free(node);
 }
-KDNode* recInsert(KDNode* root, KDNode* node, int depth, int dim) {
+static KDNode* recInsert(KDNode* root, KDNode* node, int depth, int dim) {
     if (!root) {
         root = node;
         return root;
@@ -51,7 +51,7 @@ void insertKDNode(KDBucket* bucket, KDNode* node) {
     bucket->root = recInsert(bucket->root, node, 0, bucket->dim);
     bucket->size++;
 }
-KDNode* recDelete(KDNode* root, KDNode* node, int depth, int dim) {
+static KDNode* recDelete(KDNode* root, KDNode* node, int depth, int dim) {
     if (!root) {
         return NULL;
     }
@@ -85,8 +85,9 @@ KDNode* recDelete(KDNode* root, KDNode* node, int depth, int dim) {
 }
 void deleteKDNode(KDBucket* bucket, KDNode* node) {
     bucket->root = recDelete(bucket->root, node, 0, bucket->dim);
+    bucket->size-=1;
 }
-void recNN(KDNode* root, Vector* v, KDNode** best, double* bestdist, int depth) {
+static void recNN(KDNode* root, Vector* v, KDNode** best, double* bestdist, int depth) {
     if (!root) {
         return;
     }
@@ -122,7 +123,7 @@ KDNode* nearestNeighbor(KDBucket* bucket, Vector* v) {
     recNN(bucket->root, v, &best, &bestdist, 0);
     return best;
 }
-void recKNN(KDNode* root, Vector* v, KDNode*** best, double** bestdists, int depth, int k) {
+static void recKNN(KDNode* root, Vector* v, KDNode*** best, double** bestdists, int depth, int k) {
     if (!root) {
         return;
     }
@@ -187,6 +188,25 @@ KDNode** kNearestNeighbors(KDBucket* bucket, Vector* v, int k) {
     }
     free(bestdists);
     return bests;
+}
+static void recTraverse(KDNode* node, KDNode** nodes) {
+    if (node) {
+        recTraverse(node->left, nodes);
+        int i = 0;
+        while (nodes[i]) {
+            i++;
+        }
+        nodes[i] = node;
+        recTraverse(node->right, nodes);
+    }
+}
+KDNode** getAllNodes(KDBucket* bucket) {
+    KDNode** nodes = (KDNode**)malloc(bucket->size * sizeof(KDNode*));
+    for (int i = 0; i < bucket->size; i++) {
+        nodes[i] = NULL;
+    }
+    recTraverse(bucket->root, nodes);
+    return nodes;
 }
 KDBucket* initKDBucket(int dim) {
     KDBucket* bucket = (KDBucket*)malloc(sizeof(KDBucket));

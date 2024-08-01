@@ -23,13 +23,14 @@ typedef struct {
 KDNode* initKDNode(Vector vec, INFO_TYPE information);
 void freeKDNode(KDNode* node);
 void insertKDNode(KDBucket* bucket, KDNode* node);
-KDNode* recInsert(KDNode* root, KDNode* node, int depth, int dim);
-KDNode* recDelete(KDNode* root, KDNode* node, int depth, int dim);
+//KDNode* recInsert(KDNode* root, KDNode* node, int depth, int dim);
+//KDNode* recDelete(KDNode* root, KDNode* node, int depth, int dim);
 void deleteKDNode(KDBucket* bucket, KDNode* node);
 KDNode* nearestNeighbor(KDBucket* bucket, Vector* v);
-void recNN(KDNode* root, Vector* v, KDNode** best, double* bestdist, int depth);
+//void recNN(KDNode* root, Vector* v, KDNode** best, double* bestdist, int depth);
 KDNode** kNearestNeighbors(KDBucket* bucket, Vector* v, int k);
-void recKNN(KDNode* root, Vector* v, KDNode*** best, double** bestdists, int depth, int k);
+//void recKNN(KDNode* root, Vector* v, KDNode*** best, double** bestdists, int depth, int k);
+KDNode** getAllNodes(KDBucket* bucket);
 KDBucket* initKDBucket(int dim);
 void freeKDBucket(KDBucket* bucket);
 #endif

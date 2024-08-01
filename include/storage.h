@@ -3,11 +3,9 @@
 
 #include <stdio.h>
 #include "vectors.h"
+#include <string.h>
 #ifndef INFO_TYPE
 #define INFO_TYPE char*
-#endif
-#ifndef STRUCTURE_TYPE
-#define STRUCTURE_TYPE DBEntry*
 #endif
 
 typedef struct {
