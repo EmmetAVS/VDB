@@ -34,14 +34,17 @@ void freeKDNode(KDNode* node) {
 static KDNode* recInsert(KDNode* root, KDNode* node, int depth, int dim) {
     if (!root) {
         root = node;
+        printf("Inserting at root\n");
         return root;
     }
 
     int cd = depth % dim;
 
     if (node->vec.data[cd] < root->vec.data[cd]) {
+        printf("inserting left of root\n");
         root->left = recInsert(root->left, node, depth+1, dim);
     } else {
+        printf("Inserting right of root\n");
         root->right = recInsert(root->right, node, depth+1, dim);
     }
 
@@ -49,7 +52,7 @@ static KDNode* recInsert(KDNode* root, KDNode* node, int depth, int dim) {
 }
 void insertKDNode(KDBucket* bucket, KDNode* node) {
     if (bucket->dim != node->vec.dim) {
-        printf("\nNODE IGNORED: INVALID VECTOR DIMENSION\n");
+        printf("\nNODE IGNORED: INVALID VECTOR DIMENSION, %d vs %d\n", bucket->dim, node->vec.dim);
         return;
     }
     bucket->root = recInsert(bucket->root, node, 0, bucket->dim);
